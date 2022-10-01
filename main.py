@@ -1,9 +1,5 @@
-import cv2
 import numpy as np
-import paho.mqtt.client as mqtt
-import logging
 import json
-import threading
 import mqtt_helper
 import configparser
 import time

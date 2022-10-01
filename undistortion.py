@@ -46,7 +46,7 @@ def undistortImgs(imgsPath, mtx, dist, alpha=0):
     for pname in images:
         img = undistort(pname, mtx, dist, alpha)
         fname = os.path.basename(pname)
-        output_name = './output/D_' + fname
+        output_name = './undistort_img/D_' + fname
         cv2.imwrite(output_name, img)
 
 if __name__ == '__main__':

@@ -30,9 +30,9 @@ bin/**
 obj/**
 .pytest_cache
 tmp/**
-img/**
-output/**
-download/**
+img/*.png
+undistort_img/*.png
+download/*.png
 .python-version
 .vscode/
 test-results*.xml
