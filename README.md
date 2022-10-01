@@ -10,7 +10,9 @@ ues mqtt to get imgs, and undistort them
 
 1. Get imgs from broker. I can not get any imgs now...
 2. Why sample code need to save newcameramtx to config file?
-3. Code review and add some comments. (where should use try catch and write log)
+3. Code review and add some comments.  
+   (We need to understand each line of the code) 
+   (where should use try catch and write log)
 
 ## note
 
