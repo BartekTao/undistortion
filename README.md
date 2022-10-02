@@ -9,9 +9,9 @@ ues mqtt to get imgs, and undistort them
 ## TODO
 
 1. Get imgs from broker. I can not get any imgs now...
-2. Why sample code need to save newcameramtx to config file?
+2. Why sample code need to save newcameramtx to config file? only needs to be calculated once, because imgs size are the same
 3. Code review and add some comments.  
-   (We need to understand each line of the code) 
+   (We need to understand each line of the code)
    (where should use try catch and write log)
 
 ## note
@@ -70,3 +70,7 @@ https://www.jianshu.com/p/6daa8dbbfa30
 ### cornerSubPix
 
 https://blog.csdn.net/Sunshine_in_Moon/article/details/45440111
+
+### undistort example
+
+https://tw.pythontechworld.com/article/detail/1Yejcu1gNWsC
