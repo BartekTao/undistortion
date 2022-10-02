@@ -11,20 +11,27 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 if __name__ == '__main__':
+    # subscribe broker
     mainThread = mqtt_helper.Subscribe(config['broker']['topic'], config['broker']['ip'])
     mainThread.start()
+    time.sleep(2)
 
-    time.sleep(1)
-
+    # publish test message to broker
     pub = mqtt_helper.Publish(config['broker']['topic'], config['broker']['ip'])
-    data = { 'payload' : {'text': "test hello." } }
-    pub.publish(json.dumps(data))
+    data = {'text': "test hello." }
+    pub.publish(data)
 
-    time.sleep(1)
+    # publish photo request message to broker
+    data = {'request': "photo" }
+    pub.publish(data)
 
-    data = { 'payload' : {'request': "photo" } }
-    pub.publish(json.dumps(data))
+    # set ks, and dist to config
+    if DEBUG:
+        undistortion.find_points(patternsize, './img')
+    else:
+        undistortion.find_points(patternsize, './download')
 
+    # get ks, and dist from config
     ks = np.array(json.loads(config['intrinsic']['ks']))
     dist = np.array(json.loads(config['intrinsic']['dist']))
 

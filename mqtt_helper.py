@@ -25,9 +25,7 @@ class Subscribe(threading.Thread):
         if main.DEBUG:
             data = json.loads(msg.payload)
             if 'text' in data:
-                print(data)
-            else:
-                undistortion.find_points(main.patternsize, './img')
+                print(data['text'])
         else:
             cmds = json.loads(msg.payload)
             if 'text' in cmds:
