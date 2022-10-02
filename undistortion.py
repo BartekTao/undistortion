@@ -1,9 +1,12 @@
+import json
 import os
 import cv2
 import numpy as np
 import glob
 import main
 import file_helper
+
+alpha = 0
 
 def find_points(checker, imgsPath):
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -21,34 +24,37 @@ def find_points(checker, imgsPath):
         ret, corners = cv2.findChessboardCorners(gray, checker, None)
         if ret==True:
             objpoints.append(objp)
-            cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
+            # search winSize = 5*2+1 = 11
+            cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
             imgpoints.append(corners)
-            img = cv2.drawChessboardCorners(img, checker, corners, ret)
-        # cv2.imshow('img',img)
-        # cv2.waitKey(0)
+            # img = cv2.drawChessboardCorners(img, checker, corners, ret)
+            # cv2.imshow('img',img)
+            # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape, None, None)
-    
     main.config['intrinsic']['ks'] = str(mtx.tolist())
     main.config['intrinsic']['dist'] = str(dist.tolist())
+
+    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, img.shape[:2], alpha, img.shape[:2])
+    main.config['intrinsic']['newcameramtx'] = str(newcameramtx.tolist())
+    
     file_helper.saveConfig()
 
-    return ret, mtx, dist, rvecs, tvecs
+    return ret, mtx, dist, rvecs, tvecs, newcameramtx
 
-def undistort(imgPath, mtx, dist, alpha=0):
+def undistort(imgPath, mtx, dist, newcameramtx):
     img = cv2.imread(imgPath)
-    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, img.shape[:2], alpha, img.shape[:2])
     undistortImg = cv2.undistort(img, mtx, dist, None, newcameramtx)
     return undistortImg
 
-def undistortImgs(imgsPath, mtx, dist, alpha=0):
+def undistortImgs(imgsPath, mtx, dist, newcameramtx):
     images = glob.glob(imgsPath + '/*.png')
     for pname in images:
-        img = undistort(pname, mtx, dist, alpha)
+        img = undistort(pname, mtx, dist, newcameramtx)
         fname = os.path.basename(pname)
         output_name = './undistort_img/D_' + fname
         cv2.imwrite(output_name, img)
 
 if __name__ == '__main__':
-    ret, mtx, dist, rvecs, tvecs = find_points(main.patternsize, "./img")
-    undistortImgs('./img', mtx, dist)
+    ret, mtx, dist, rvecs, tvecs, newcameramtx = find_points(main.patternsize, "./img")
+    undistortImgs('./img', mtx, dist, newcameramtx)

@@ -25,16 +25,19 @@ if __name__ == '__main__':
     data = {'request': "photo" }
     pub.publish(data)
 
-    # set ks, and dist to config
     if DEBUG:
-        undistortion.find_points(patternsize, './img')
+        imgPath = './img'
     else:
-        undistortion.find_points(patternsize, './download')
+        imgPath = './download'
 
-    # get ks, and dist from config
+    # set ks, and dist to config
+    undistortion.find_points(patternsize, imgPath)
+
+    # get ks, dist and newcameramtx from config
     ks = np.array(json.loads(config['intrinsic']['ks']))
     dist = np.array(json.loads(config['intrinsic']['dist']))
+    newcameramtx = np.array(json.loads(config['intrinsic']['newcameramtx']))
 
-    undistortion.undistortImgs('./img', ks, dist)
+    undistortion.undistortImgs(imgPath, ks, dist, newcameramtx)
 
     mainThread.stop()
