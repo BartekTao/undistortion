@@ -20,6 +20,37 @@ ues mqtt to get imgs, and undistort them
 
 ## other resource
 
+### python array
+
+```python
+x = [[1, 2, 3, 4],
+     [5, 6, 7, 8],
+     [9, 10, 11, 12],
+     [13, 14, 15, 16]]
+
+x[:, 0] = [1, 5, 9, 13]
+x[:, 2] = [3, 7, 11, 15]
+x[:, 1:3] = [[2, 3],
+             [6, 7],
+             [10, 14]]
+# 分號控制範圍，1:4 => 1~3
+# 沒有數字的話代表， :3 => 0~2， 3: => 3~最後
+
+x = np.array([[3,4],
+              [5,6]])
+
+# T: matrix transpose
+# 三維 四維 轉至矩陣https://blog.csdn.net/qq_36758914/article/details/105488508
+# https://stackoverflow.com/questions/42308270/python-numpy-mgrid-and-reshape
+x.T
+[[3, 5],
+ [4, 6]]
+
+# z.reshape(-1) => -1 代表length of z
+# z.reshape(x, y) => 將z reshape 成x * y 的矩陣
+
+```
+
 ### python class know how
 
 https://www.796t.com/content/1544582523.html
@@ -35,3 +66,7 @@ https://officeguide.cc/python-paho-library-mqtt-client-tutorial-examples/
 ### undistort function 差異
 
 https://www.jianshu.com/p/6daa8dbbfa30
+
+### cornerSubPix
+
+https://blog.csdn.net/Sunshine_in_Moon/article/details/45440111
