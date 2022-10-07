@@ -2,17 +2,23 @@
 
 ues mqtt to get imgs, and undistort them
 
-1. DEBUG = False => doesn't finish
-2. if you want to run DEBUG = True, please download the example imgs from E3 to img folder
-3. remember to run `pip3 install -r requirements.txt`
+1. if you want to run DEBUG = True, please download the example imgs from E3 to img folder
+2. remember to run `pip3 install -r requirements.txt` on first clone
+3. run `python3 main.py`
 
 ## TODO
 
-1. Get imgs from broker. I can not get any imgs now...
-2. Why sample code need to save newcameramtx to config file? only needs to be calculated once, because imgs size are the same
-3. Code review and add some comments.  
+1. Code review and add some comments.  
    (We need to understand each line of the code)
    (where should use try catch and write log)
+2. clean requirements.txt
+
+## DONE
+
+1. Get imgs from broker. I can not get any imgs now...
+   * Should add team number as a topic suffix. ex: `deep_learning_lecture_5`
+   * Sub and Pub topic are different!! Sub `server_response_5` to get echo, sub `secret_photo_5` to get secret photo, and pub `deep_learning_lecture_5` to sent request. (ref: config.ini)
+2. Why sample code need to save newcameramtx to config file? only needs to be calculated once, because imgs size are the same
 
 ## note
 

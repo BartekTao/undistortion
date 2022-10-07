@@ -31,7 +31,7 @@ if __name__ == '__main__':
     pub.publish(data)
     
     # wait for img download
-    # TODO
+    # TODO: try to get finish message from thread
     time.sleep(5)
 
     if DEBUG:
