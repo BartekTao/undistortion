@@ -5,21 +5,22 @@ import logging
 import json
 import threading
 import main
-import undistortion
+import file_helper
 
 class Subscribe(threading.Thread):
-    def __init__(self, topic, broker):
+    def __init__(self, topics, broker):
         threading.Thread.__init__(self)
         self.killswitch = threading.Event()
         self.client = mqtt.Client()
-        self.topic = topic
+        self.topics = topics
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.connect(broker)
 
     def on_connect(self, client, userdata, msg, rc):
         logging.info(f'connected with code: {rc}')
-        self.client.subscribe(self.topic)
+        for topic in self.topics:
+            self.client.subscribe(topic)
 
     def on_message(self, client, userdata, msg):
         if main.DEBUG:
@@ -32,17 +33,15 @@ class Subscribe(threading.Thread):
                 print(cmds)
 
             if 'data' in cmds:
-                os.makedirs('./q2', exist_ok=True)
+                os.makedirs('./download', exist_ok=True)
                 for i in range(len(cmds['data'])):
-                    # TODO4: save iamge to ./q2, so you have to decode msg
-                    image = cmds['data'][i]
+                    img = file_helper.coverToCV2(cmds['data'][i])
                     filename = 'photo_' + str(i) + '.png'
-                    cv2.imwrite(os.path.join('./q2', filename), image)
+                    cv2.imwrite(os.path.join('./download', filename), img)
 
             if 'dist_data' in cmds:
-                # TODO5: you have to decode msg
-                image = cmds['dist_data']
-                cv2.imwrite('dist_image.png', image)
+                img = file_helper.coverToCV2(cmds['data'][i])
+                cv2.imwrite('dist_image.png', img)
 
     def stop(self):
         self.killswitch.set()
