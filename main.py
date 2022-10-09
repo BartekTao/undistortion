@@ -2,20 +2,29 @@ import numpy as np
 import json
 import mqtt_helper
 import configparser
-import time
 import undistortion
+import threading
+import queue
 
 DEBUG = False
 patternsize = (7, 7)
 config = configparser.ConfigParser()
 config.read('config.ini')
 
+lock = threading.Lock()
+imgs_queue = queue.Queue()
+
 if __name__ == '__main__':
     # subscribe broker
     sub_topics = [config['broker']['topic_sub_respone'], config['broker']['topic_sub_photo']]
     mainThread = mqtt_helper.Subscribe(sub_topics, config['broker']['ip'])
     mainThread.start()
-    time.sleep(2)
+
+    # you can only publish messages after subscribing
+    # waiting for connection
+    lock.acquire()
+    print("connected")
+    lock.release()
 
     # publish test message to broker
     pub = mqtt_helper.Publish(config['broker']['topic_pub'], config['broker']['ip'])
@@ -29,23 +38,19 @@ if __name__ == '__main__':
     # publish secret message to broker
     data = {'request': "EC234_NOL" }
     pub.publish(data)
-    
-    # wait for img download
-    # TODO: try to get finish message from thread
-    time.sleep(5)
 
-    if DEBUG:
-        imgPath = './img'
-    else:
-        imgPath = './download'
-    
     # set ks, and dist to config
-    undistortion.find_points(patternsize, imgPath)
+    undistortion.find_points(patternsize)
 
     # get ks, dist and newcameramtx from config
     ks = np.array(json.loads(config['intrinsic']['ks']))
     dist = np.array(json.loads(config['intrinsic']['dist']))
     newcameramtx = np.array(json.loads(config['intrinsic']['newcameramtx']))
+
+    if DEBUG:
+        imgPath = './img'
+    else:
+        imgPath = './download'
 
     undistortion.undistortImgs(imgPath, ks, dist, newcameramtx)
 

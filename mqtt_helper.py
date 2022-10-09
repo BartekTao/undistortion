@@ -9,6 +9,8 @@ import file_helper
 
 class Subscribe(threading.Thread):
     def __init__(self, topics, broker):
+        main.lock.acquire()
+        print("connecting to broker %s" % broker)
         threading.Thread.__init__(self)
         self.killswitch = threading.Event()
         self.client = mqtt.Client()
@@ -16,6 +18,7 @@ class Subscribe(threading.Thread):
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.connect(broker)
+        main.lock.release()
 
     def on_connect(self, client, userdata, msg, rc):
         logging.info(f'connected with code: {rc}')
@@ -37,7 +40,11 @@ class Subscribe(threading.Thread):
                 for i in range(len(cmds['data'])):
                     img = file_helper.coverToCV2(cmds['data'][i])
                     filename = 'photo_' + str(i) + '.png'
-                    cv2.imwrite(os.path.join('./download', filename), img)
+                    fullPath = os.path.join('./download', filename)
+                    cv2.imwrite(fullPath, img)
+
+                    # push image path to imgs_queue
+                    main.imgs_queue.put(fullPath)
 
             if 'dist_data' in cmds:
                 img = file_helper.coverToCV2(cmds['data'][i])

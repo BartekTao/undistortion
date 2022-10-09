@@ -8,7 +8,7 @@ import file_helper
 
 alpha = 0
 
-def find_points(checker, imgsPath):
+def find_points(checker):
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     objp=np.zeros((checker[0]*checker[1], 3), np.float32)
     objp[:, :2]=np.mgrid[0:checker[0], 0:checker[0]].T.reshape(-1, 2)
@@ -16,21 +16,36 @@ def find_points(checker, imgsPath):
     objpoints=[]
     imgpoints=[]
     
-    images = glob.glob(imgsPath + '/*.png')
-    for fname in images:
-        img = cv2.imread(fname)
+    if main.DEBUG:
+        images = glob.glob('./img/*.png')
+        for fname in images:
+            img = cv2.imread(fname)
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            ret, corners = cv2.findChessboardCorners(gray, checker, None)
+            if ret==True:
+                objpoints.append(objp)
+                # search winSize = 5*2+1 = 11
+                cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
+                imgpoints.append(corners)
+                # img = cv2.drawChessboardCorners(img, checker, corners, ret)
+                # cv2.imshow('img',img)
+                # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+    else:
+        # must receive 10 imgs
+        for _ in range(10):
+            # wait until get next image path
+            fullPath = main.imgs_queue.get()
+            img = cv2.imread(fullPath)
 
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        ret, corners = cv2.findChessboardCorners(gray, checker, None)
-        if ret==True:
-            objpoints.append(objp)
-            # search winSize = 5*2+1 = 11
-            cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
-            imgpoints.append(corners)
-            # img = cv2.drawChessboardCorners(img, checker, corners, ret)
-            # cv2.imshow('img',img)
-            # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            ret, corners = cv2.findChessboardCorners(gray, checker, None)
+            if ret==True:
+                objpoints.append(objp)
+                # search winSize = 5*2+1 = 11
+                cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
+                imgpoints.append(corners)
+
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape, None, None)
     main.config['intrinsic']['ks'] = str(mtx.tolist())
     main.config['intrinsic']['dist'] = str(dist.tolist())
@@ -56,5 +71,6 @@ def undistortImgs(imgsPath, mtx, dist, newcameramtx):
         cv2.imwrite(output_name, img)
 
 if __name__ == '__main__':
-    ret, mtx, dist, rvecs, tvecs, newcameramtx = find_points(main.patternsize, "./img")
+    main.DEBUG = True
+    ret, mtx, dist, rvecs, tvecs, newcameramtx = find_points(main.patternsize)
     undistortImgs('./img', mtx, dist, newcameramtx)
