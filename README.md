@@ -6,6 +6,7 @@ ues mqtt to get imgs, and undistort them
 2. if you want to run DEBUG = True, please download the example imgs from E3 to img folder
 3. remember to run `pip3 install -r requirements.txt` on first clone
 4. run `python3 main.py`
+5. `python3 -m unittest` to run all test
 
 ## TODO
 

@@ -67,4 +67,4 @@ class Publish(object):
         self.client.connect(broker)
 
     def publish(self, data):
-        self.client.publish(self.topic, json.dumps(data))
+        return self.client.publish(self.topic, json.dumps(data))

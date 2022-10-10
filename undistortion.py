@@ -1,4 +1,3 @@
-import json
 import os
 import cv2
 import numpy as np
@@ -53,7 +52,7 @@ def find_points(checker):
     newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, img.shape[:2], alpha, img.shape[:2])
     main.config['intrinsic']['newcameramtx'] = str(newcameramtx.tolist())
     
-    file_helper.saveConfig()
+    file_helper.saveConfig(main.config)
 
     return ret, mtx, dist, rvecs, tvecs, newcameramtx
 

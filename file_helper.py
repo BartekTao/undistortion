@@ -1,11 +1,10 @@
-import main
 import cv2
 import base64
 import pickle
 
-def saveConfig():
+def saveConfig(config):
     with open('config.ini', 'w') as configfile:
-        main.config.write(configfile)
+        config.write(configfile)
 
 def coverToCV2(data):
     imdata = base64.b64decode(data)
