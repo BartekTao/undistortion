@@ -13,7 +13,6 @@ ues mqtt to get imgs, and undistort them
 1. Code review and add some comments.  
    (We need to understand each line of the code)
    (where should use try catch and write log)
-2. clean requirements.txt
 
 ## DONE
 
@@ -25,6 +24,7 @@ ues mqtt to get imgs, and undistort them
 ## note
 
 1. how to create broker? If we know this, we can create a more complete test.
+   => use public broker to run test
 
 ## other resource
 
