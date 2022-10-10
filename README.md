@@ -2,9 +2,10 @@
 
 ues mqtt to get imgs, and undistort them
 
-1. if you want to run DEBUG = True, please download the example imgs from E3 to img folder
-2. remember to run `pip3 install -r requirements.txt` on first clone
-3. run `python3 main.py`
+1. for mac: `brew install mosquitto`
+2. if you want to run DEBUG = True, please download the example imgs from E3 to img folder
+3. remember to run `pip3 install -r requirements.txt` on first clone
+4. run `python3 main.py`
 
 ## TODO
 
