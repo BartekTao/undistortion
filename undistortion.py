@@ -8,7 +8,6 @@ import file_helper
 alpha = 0
 
 def find_points(checker):
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     objp=np.zeros((checker[0]*checker[1], 3), np.float32)
     objp[:, :2]=np.mgrid[0:checker[0], 0:checker[0]].T.reshape(-1, 2)
 
@@ -19,12 +18,10 @@ def find_points(checker):
         images = glob.glob('./img/*.png')
         for fname in images:
             img = cv2.imread(fname)
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            ret, corners = cv2.findChessboardCorners(gray, checker, None)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            ret, corners = cv2.findChessboardCorners(img, checker, None)
             if ret==True:
                 objpoints.append(objp)
-                # search winSize = 5*2+1 = 11
-                cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
                 imgpoints.append(corners)
                 # img = cv2.drawChessboardCorners(img, checker, corners, ret)
                 # cv2.imshow('img',img)
@@ -37,19 +34,19 @@ def find_points(checker):
             fullPath = main.imgs_queue.get()
             img = cv2.imread(fullPath)
 
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            ret, corners = cv2.findChessboardCorners(gray, checker, None)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            ret, corners = cv2.findChessboardCorners(img, checker, None)
             if ret==True:
                 objpoints.append(objp)
-                # search winSize = 5*2+1 = 11
-                cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)
                 imgpoints.append(corners)
-
-    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape, None, None)
+    # mtx：相機內參；dist：畸變係數；revcs：旋轉矩陣；tvecs：平移向量
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img.shape, None, None)
     main.config['intrinsic']['ks'] = str(mtx.tolist())
     main.config['intrinsic']['dist'] = str(dist.tolist())
+    main.config['intrinsic']['rvecs'] = str(dist.tolist())
+    main.config['intrinsic']['tvecs'] = str(dist.tolist())
 
-    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, img.shape[:2], alpha, img.shape[:2])
+    newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, img.shape, alpha, img.shape)
     main.config['intrinsic']['newcameramtx'] = str(newcameramtx.tolist())
     
     file_helper.saveConfig(main.config)
@@ -69,7 +66,3 @@ def undistortImgs(imgsPath, mtx, dist, newcameramtx):
         output_name = './undistort_img/D_' + fname
         cv2.imwrite(output_name, img)
 
-if __name__ == '__main__':
-    main.DEBUG = True
-    ret, mtx, dist, rvecs, tvecs, newcameramtx = find_points(main.patternsize)
-    undistortImgs('./img', mtx, dist, newcameramtx)

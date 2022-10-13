@@ -47,8 +47,9 @@ class Subscribe(threading.Thread):
                     main.imgs_queue.put(fullPath)
 
             if 'dist_data' in cmds:
-                img = file_helper.coverToCV2(cmds['data'][i])
-                cv2.imwrite('dist_image.png', img)
+                img = file_helper.coverToCV2(cmds['dist_data'])
+                fullPath = './download/dist_image.png'
+                cv2.imwrite(fullPath, img)
 
     def stop(self):
         self.killswitch.set()

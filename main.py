@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import json
 import mqtt_helper
@@ -5,6 +6,7 @@ import configparser
 import undistortion
 import threading
 import queue
+import time
 
 DEBUG = False
 patternsize = (7, 7)
@@ -47,11 +49,12 @@ if __name__ == '__main__':
     dist = np.array(json.loads(config['intrinsic']['dist']))
     newcameramtx = np.array(json.loads(config['intrinsic']['newcameramtx']))
 
-    if DEBUG:
-        imgPath = './img'
-    else:
-        imgPath = './download'
+    data = {'request': "dist_photo" }
+    pub.publish(data)
 
-    undistortion.undistortImgs(imgPath, ks, dist, newcameramtx)
+    time.sleep(3)
+
+    img = undistortion.undistort('./download/dist_image.png', ks, dist, newcameramtx)
+    cv2.imwrite("./undistort_img/D_dist_image.png", img)
 
     mainThread.stop()
